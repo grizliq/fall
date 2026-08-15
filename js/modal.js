@@ -2,14 +2,23 @@
   var modal = document.getElementById('md-notify');
   if (!modal) return;
 
-  var KEY = 'fp_notify_shown';
-  var DELAY = 25000;         // 25 секунд на изучение сайта
-  var SCROLL_AT = 0.45;      // либо 45% прокрутки — что случится раньше
+  /* ---- настройки ---- */
+  var MIN_TIME  = 30000;   // раньше этого модалка не покажется НИКОГДА
+  var MAX_TIME  = 75000;   // если ничего не сработало — показать принудительно
+  var SCROLL_AT = 0.70;    // доля прокрутки страницы (0.70 = 70%)
+  var KEY       = 'fp_notify_shown';
+
+  console.info('[fp-modal] v3 · порог ' + (MIN_TIME / 1000) + ' c');
+
+  var ready  = false;      // прошёл ли MIN_TIME
   var opened = false;
-  var timer;
+  var maxTimer;
 
   // один показ за сессию
   try { if (sessionStorage.getItem(KEY)) return; } catch (e) {}
+
+  setTimeout(function () { ready = true; }, MIN_TIME);
+  maxTimer = setTimeout(open, MAX_TIME);
 
   function open() {
     if (opened) return;
@@ -17,7 +26,7 @@
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
     try { sessionStorage.setItem(KEY, '1'); } catch (e) {}
-    clearTimeout(timer);
+    clearTimeout(maxTimer);
     window.removeEventListener('scroll', onScroll);
     document.removeEventListener('mouseout', onLeave);
   }
@@ -28,16 +37,16 @@
   }
 
   function onScroll() {
+    if (!ready) return;                       // ← главный предохранитель
     var h = document.documentElement.scrollHeight - window.innerHeight;
     if (h > 0 && window.scrollY / h >= SCROLL_AT) open();
   }
 
-  // уход курсора за верхнюю границу окна — человек собрался закрыть вкладку
   function onLeave(e) {
+    if (!ready) return;                       // ← и здесь тоже
     if (e.clientY <= 0 && !e.relatedTarget) open();
   }
 
-  timer = setTimeout(open, DELAY);
   window.addEventListener('scroll', onScroll, { passive: true });
   document.addEventListener('mouseout', onLeave);
 
