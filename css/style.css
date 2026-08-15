@@ -1,5 +1,5 @@
 /* ============================================================
-   Falling Pickaxe — Тестфффф
+   Falling Pickaxe — style.css
    Порядок подключения в index.html:
      tokens.css → кнопки.css → palette-dark.css → style.css
    ============================================================ */
@@ -21,14 +21,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Фон-слой (без background-attachment: fixed) */
+/* Фон-слой: размытая картинка + затемняющий градиент поверх */
 .page-bg {
   position: fixed;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(10, 8, 6, 0.55) 0%, rgba(10, 8, 6, 0.78) 100%),
-    url("../assets/bg/bg.jpg") center / cover no-repeat;
+  overflow: hidden;
+}
+
+.page-bg::before {
+  content: "";
+  position: absolute;
+  inset: -40px;                 /* вылет за экран, иначе blur даёт кайму по краям */
+  background: url("../assets/bg/bg.jpg") center / cover no-repeat;
+  filter: blur(10px);
+  transform: scale(1.06);
+}
+
+.page-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 8, 6, 0.60) 0%, rgba(10, 8, 6, 0.82) 100%);
+}
+
+@media (max-width: 640px) {
+  .page-bg::before { filter: blur(6px); }
 }
 
 img { max-width: 100%; height: auto; }
@@ -150,7 +168,7 @@ main > section { padding-top: 22px; padding-bottom: 22px; }
 }
 
 /* ============================================================
-   О игре 03-two-col
+   Об игре 03-two-col
    ============================================================ */
 .md-about-split { padding: 12px 0 18px; }
 
@@ -346,6 +364,7 @@ main > section { padding-top: 22px; padding-bottom: 22px; }
   margin: 0;
   font-family: var(--md-font-pixel);
   font-size: 11px;
+  line-height: 1.7;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--md-text-soft);
@@ -415,6 +434,47 @@ main > section { padding-top: 22px; padding-bottom: 22px; }
 .md-notify__title {
   font-size: clamp(1.4rem, 4.4vw, 2.15rem);
   line-height: 1.35;
-  margin: 8px 0 10px;
+  margin: 8px 0 4px;
 }
 .md-notify__cta { min-width: 186px; }
+
+/* Крестик закрытия */
+.md-notify__x {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--md-font-pixel);
+  font-size: 26px;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.15s ease;
+}
+.md-notify__x:hover { color: var(--md-gold); }
+
+/* Текст-байт под заголовком */
+.md-notify__lead {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.86);
+  max-width: 420px;
+}
+
+/* Ссылка «Позже» */
+.md-notify__skip {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: underline;
+  padding: 2px 6px;
+  transition: color 0.15s ease;
+}
+.md-notify__skip:hover { color: rgba(255, 255, 255, 0.8); }
